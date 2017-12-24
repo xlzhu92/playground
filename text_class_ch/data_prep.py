@@ -20,6 +20,8 @@ flag = len(train) #flag of train/test margin
 encoder = LabelEncoder()
 label = encoder.fit_transform(labs)
 label = label.reshape((len(label),1))
+#origin_lab = encoder.inverse_transform(label)
+
 
 char_dict = {}
 count = 1
