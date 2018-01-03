@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from keras import regularizers
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential,Model
@@ -48,6 +48,7 @@ def SequentialCNN():
     
     
 def ParallelCNN():
+    set_l2 = 0.01
     inputs = Input(shape=(None,))
     embed = Embedding(voc_len+1,150,input_length=10,embeddings_initializer='he_uniform')(inputs)
     
@@ -63,24 +64,32 @@ def ParallelCNN():
     stream5 = Conv1D(32,1,activation='relu',padding='same')(stream5)
     
     merged = Concatenate(axis=1)([stream1,stream2,stream3,stream4,stream5])
+    
+    merged = Conv1D(64,5,activation='relu',padding='valid',
+                    kernel_regularizer=regularizers.l2(set_l2))(merged)
+    merged = MaxPooling1D(pool_size=5)(merged)
+    merged = Conv1D(64,3,activation='relu',padding='valid',
+                    kernel_regularizer=regularizers.l2(set_l2))(merged)
+    merged = MaxPooling1D(pool_size=2)(merged)
     merged = Flatten()(merged)
-    merged = Dropout(0.3)(merged)
+    #merged = Dropout(0.3)(merged)
     out = BatchNormalization()(merged)
-    out = Dense(128,activation='relu')(out)
-    out = Dropout(0.3)(out)
-    out = BatchNormalization()(out)
     #out = Dense(128,activation='relu')(out)
     #out = Dropout(0.3)(out)
     #out = BatchNormalization()(out)
-    out = Dense(128,activation='relu')(out)
+    #out = Dense(128,activation='relu')(out)
+    #out = Dropout(0.3)(out)
+    #out = BatchNormalization()(out)
+    #out = Dense(128,activation='relu')(out)
     out = Dropout(0.3)(out)
-    out = BatchNormalization()(out)
-    out = Dense(class_len,activation='softmax')(out)
+    #out = BatchNormalization()(out)
+    out = Dense(class_len,activation='softmax',
+                kernel_regularizer=regularizers.l2(set_l2))(out)
     
     model = Model(inputs,out)
     print (model.summary())
     model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
-    model.fit(X,Y_cate,batch_size=200,epochs=30,validation_split=0.2)
+    model.fit(X,Y_cate,batch_size=200,epochs=20,validation_split=0.2)
     model.save('cnn_parallel_en.h5')
 
 ParallelCNN()

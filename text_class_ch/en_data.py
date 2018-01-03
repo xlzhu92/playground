@@ -10,7 +10,7 @@ from keras.preprocessing.sequence import pad_sequences
 origin_label = []
 sents = []
 
-with open('tabcore_ENG.txt') as f:
+with open('origin_data/tabcore_ENG.txt') as f:
     for line in f:
         temp = line.split('\t')
         origin_label.append(temp[0])

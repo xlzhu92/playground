@@ -6,8 +6,8 @@ from keras.utils import to_categorical
 from sklearn.preprocessing import LabelEncoder,OneHotEncoder
 from keras.preprocessing.sequence import pad_sequences
 
-train = pd.read_csv('TrainSet-eCarX-171019.txt',header=None, delim_whitespace=True,encoding='gbk')
-test = pd.read_csv('TestSet-eCarX-171019.txt',header=None, delimiter='#',encoding='gbk')
+train = pd.read_csv('origin_data/TrainSet-eCarX-171019.txt',header=None, delim_whitespace=True,encoding='gbk')
+test = pd.read_csv('origin_data/TestSet-eCarX-171019.txt',header=None, delimiter='#',encoding='gbk')
 del test[1]
 del test[3]
 
