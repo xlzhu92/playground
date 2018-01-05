@@ -6,6 +6,9 @@ from keras.utils import to_categorical
 from sklearn.preprocessing import LabelEncoder,OneHotEncoder
 from keras.preprocessing.sequence import pad_sequences
 
+
+np.random.seed(7)
+
 train = pd.read_csv('origin_data/TrainSet-eCarX-171019.txt',header=None, delim_whitespace=True,encoding='gbk')
 test = pd.read_csv('origin_data/TestSet-eCarX-171019.txt',header=None, delimiter='#',encoding='gbk')
 del test[1]
@@ -58,3 +61,4 @@ np.save('trainx',X_train)
 np.save('trainy',Y_train)
 np.save('testx',X_test)
 np.save('testy',Y_test)
+

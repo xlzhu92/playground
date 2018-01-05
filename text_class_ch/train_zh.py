@@ -3,7 +3,7 @@
 from keras import regularizers
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
-from keras.models import Sequential,Model
+from keras.models import Sequential,Model,load_model
 from keras.layers import Concatenate,Input,Dense,Embedding,Conv1D,MaxPooling1D,BatchNormalization,Dropout,Flatten,AveragePooling1D
 import numpy as np
 
@@ -109,17 +109,19 @@ def parralleCNN():
     model = Model(inputs,out)
     print (model.summary())
     model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
-    model.fit(X_train,Y_train,batch_size=200,epochs=20,validation_data=(X_test,Y_test))
-    model.save('cnn_parallel_zh.h5')
-    '''
-    pred = model.predict(X_test)
-    pred = onehot_decode(pred)
-    '''
+    model.fit(X_train,Y_train,batch_size=200,epochs=10,validation_data=(X_test,Y_test))
+    model.save('saved_models/cnn_parallel_zh.h5')
+
+
+    
     
 if __name__ == '__main__':
-    parralleCNN()
+    #parralleCNN()
     #sequentialCNN()
-
-
+    model = load_model('aved_models/cnn_parallel_zh.h5')
+    pred = model.predict(X_test)
+    pred = onehot_decode(pred)
+    with open('predict_zh.txt','w') as f:
+        for item in pred:
+            f.write("{}\n".format(item))
  
-
