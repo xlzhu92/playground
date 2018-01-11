@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from keras.callbacks import TensorBoard
 from keras import regularizers
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
@@ -108,20 +108,25 @@ def parralleCNN():
     
     model = Model(inputs,out)
     print (model.summary())
+    callback = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
     model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
-    model.fit(X_train,Y_train,batch_size=200,epochs=10,validation_data=(X_test,Y_test))
+    model.fit(X_train,Y_train,batch_size=200,epochs=15,callbacks = [callback],
+              #validation_split=0.2,
+              validation_data=(X_test,Y_test)
+              )
     model.save('saved_models/cnn_parallel_zh.h5')
 
 
     
     
 if __name__ == '__main__':
-    #parralleCNN()
+    parralleCNN()
     #sequentialCNN()
-    model = load_model('aved_models/cnn_parallel_zh.h5')
+
+    model = load_model('saved_models/cnn_parallel_zh.h5')
     pred = model.predict(X_test)
     pred = onehot_decode(pred)
     with open('predict_zh.txt','w') as f:
         for item in pred:
             f.write("{}\n".format(item))
- 
+
