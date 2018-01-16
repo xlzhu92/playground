@@ -49,6 +49,7 @@ Train = data[:flag]
 Test = data[flag:]
 
 
+
 np.random.shuffle(Train)
 np.random.shuffle(Test)
 

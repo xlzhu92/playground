@@ -8,10 +8,10 @@ from keras.layers import Concatenate,Input,Dense,Embedding,Conv1D,MaxPooling1D,B
 import numpy as np
 
 
-X_train = np.load('trainx.npy')
-Y_train = np.load('trainy.npy')
-X_test = np.load('testx.npy')
-Y_test = np.load('testy.npy')
+X_train = np.load('data_oov/trainx.npy')
+Y_train = np.load('data_oov/trainy.npy')
+X_test = np.load('data_oov/testx.npy')
+Y_test = np.load('data_oov/testy.npy')
 
 Y_train = to_categorical(Y_train)
 Y_test = to_categorical(Y_test)
@@ -63,7 +63,7 @@ def sequentialCNN():
 def parralleCNN():
     set_l2 = 0.01
     inputs = Input(shape=(None,))
-    embed = Embedding(voc_len+1,150,input_length=30,embeddings_initializer='he_uniform')(inputs)
+    embed = Embedding(voc_len+1,100,input_length=30,embeddings_initializer='he_uniform')(inputs)
     
     stream1 = Conv1D(32,5,activation='relu',padding='valid',
                      kernel_regularizer=regularizers.l2(set_l2))(embed)
@@ -94,23 +94,26 @@ def parralleCNN():
     merged = MaxPooling1D(pool_size=2)(merged)
     merged = Flatten()(merged)
     merged = Dropout(0.4)(merged)
-    out = BatchNormalization()(merged)
+    out = BatchNormalization(name='bn_layer')(merged)
     #out = Dense(128,activation='relu')(out)
     #out = Dropout(0.3)(out)
     #out = BatchNormalization()(out)
     #out = Dense(128,activation='relu')(out)
     #out = Dropout(0.3)(out)
     #out = BatchNormalization()(out)
-    #out = Dense(128,activation='relu',kernel_regularizer=regularizers.l2(0.01))(out)
+    #out = Dense(64,activation='relu',kernel_regularizer=regularizers.l2(set_l2))(out)
     #out = Dropout(0.3)(out)
     #out = BatchNormalization()(out)
     out = Dense(class_len,activation='softmax',kernel_regularizer=regularizers.l2(set_l2))(out)
     
     model = Model(inputs,out)
     print (model.summary())
-    callback = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
+    callback = TensorBoard(log_dir='./Graph',
+                           #histogram_freq=100, write_grads=True,
+                           write_graph=True, write_images=True)
     model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
-    model.fit(X_train,Y_train,batch_size=200,epochs=15,callbacks = [callback],
+    model.fit(X_train,Y_train,batch_size=200,epochs=20,
+              #callbacks = [callback],
               #validation_split=0.2,
               validation_data=(X_test,Y_test)
               )
